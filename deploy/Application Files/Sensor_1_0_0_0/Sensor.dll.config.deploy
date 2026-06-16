@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <configSections>
+        <sectionGroup name="userSettings" type="System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" >
+            <section name="Sensor.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" allowExeDefinition="MachineToLocalUser" requirePermission="false" />
+        </sectionGroup>
+    </configSections>
+    <userSettings>
+        <Sensor.Properties.Settings>
+            <setting name="GROUP_KEY" serializeAs="String">
+                <value />
+            </setting>
+            <setting name="END_USER" serializeAs="String">
+                <value />
+            </setting>
+            <setting name="API_URL" serializeAs="String">
+                <value />
+            </setting>
+        </Sensor.Properties.Settings>
+    </userSettings>
+</configuration>

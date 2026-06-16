@@ -61,3 +61,15 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+# Ensure ClickOnce manifests and application files are treated as raw binaries
+*.application binary
+*.manifest    binary
+*.deploy      binary
+
+# Ensure standard executable and library files are treated as binaries
+*.exe         binary
+*.dll         binary
+
+# Prevent any text normalization on files inside the ClickOnce storage directory
+Application Files/ -text
