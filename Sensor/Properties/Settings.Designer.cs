@@ -58,5 +58,41 @@ namespace Sensor.Properties {
                 this["API_URL"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UNIT {
+            get {
+                return ((string)(this["UNIT"]));
+            }
+            set {
+                this["UNIT"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DEVICE_TYPE {
+            get {
+                return ((string)(this["DEVICE_TYPE"]));
+            }
+            set {
+                this["DEVICE_TYPE"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NETWORK_TYPE {
+            get {
+                return ((string)(this["NETWORK_TYPE"]));
+            }
+            set {
+                this["NETWORK_TYPE"] = value;
+            }
+        }
     }
 }

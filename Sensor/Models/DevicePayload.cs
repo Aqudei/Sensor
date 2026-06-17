@@ -36,5 +36,12 @@ namespace Sensor.Models
 
         [JsonPropertyName("network_type")]
         public string NetworkType { get; set; }
+
+        [JsonPropertyName("model")]
+
+        public string Model { get; set; }
+
+        [JsonPropertyName("av_edr")]
+        public string AVEDR { get; set; }
     }
 }

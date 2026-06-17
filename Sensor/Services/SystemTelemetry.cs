@@ -2,11 +2,14 @@
 using Sensor.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
+using System.Management;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.ServiceProcess;
 using System.Text;
 
 namespace Sensor.Services
@@ -21,6 +24,73 @@ namespace Sensor.Services
             string computerName = Environment.MachineName;
             string userName = Environment.UserName;
             return $"{computerName}\\{userName}";
+        }
+
+        public static string GetSystemModel()
+        {
+            try
+            {
+                using(var searcher = new ManagementObjectSearcher("SELECT Model FROM Win32_ComputerSystem"))
+                {
+                    foreach (var obj in searcher.Get())
+                    {
+                        return obj["Model"]?.ToString()?.Trim() ?? string.Empty;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                return string.Empty;
+            }
+
+            return string.Empty;
+        }
+
+
+        public static IEnumerable<string> CheckEDRServices()
+        {
+            // Dictionary mapping Windows Service Names to readable EDR Vendor Names
+            var edrServices = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "CSFalconService", "CrowdStrike Falcon" },
+                { "Sense", "Microsoft Defender for Endpoint" },
+                { "CylanceSvc", "Cylance" },
+                { "SentinelAgent", "SentinelOne" },
+                { "CbDefense", "Carbon Black Defense" },
+                { "CbEnterpriseAgent", "Carbon Black Enterprise" },
+                { "WinCollector", "LogRhythm" },
+                { "hmpalert", "Sophos Intercept X" },
+                { "Sophos Clean Service", "Sophos Clean" },
+                { "Tanium Client", "Tanium" },
+                { "CybereasonActiveProbe", "Cybereason" },
+                { "xdrservice", "Cortex XDR (Palo Alto)" }
+            };
+
+            var foundServices = new List<string>();
+
+            try
+            {
+                // Get all services installed on the local machine
+                ServiceController[] services = ServiceController.GetServices();
+
+                foreach (var service in services)
+                {
+                    if (edrServices.TryGetValue(service.ServiceName, out string edrName))
+                    {
+                        // Optional: You can also verify if the service is running
+                        // if (service.Status == ServiceControllerStatus.Running)
+                        foundServices.Add(edrName);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Handle security or permission exceptions if access to service list is restricted
+                return [];
+            }
+
+            return foundServices;
         }
 
         /// <summary>
@@ -208,7 +278,7 @@ namespace Sensor.Services
         /// <summary>
         /// Retrieves a list of active network interfaces matching MAC and IP address pairs.
         /// </summary>
-        internal static List<NetworkInterfaceModel> GetNetworkInterfaces()
+        public static List<NetworkInterfaceModel> GetNetworkInterfaces()
         {
             var result = new List<NetworkInterfaceModel>();
             var interfaces = NetworkInterface.GetAllNetworkInterfaces();
@@ -234,7 +304,7 @@ namespace Sensor.Services
                     }
                 }
 
-                if (string.IsNullOrEmpty(ipAddress) || string.IsNullOrWhiteSpace(ni.Name)) 
+                if (string.IsNullOrEmpty(ipAddress) || string.IsNullOrWhiteSpace(ni.Name))
                     continue;
 
                 result.Add(new NetworkInterfaceModel

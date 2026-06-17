@@ -87,7 +87,7 @@ namespace Sensor.ViewModels
 
             DeviceTypes.Clear();
             foreach (var item in await devicesTask) DeviceTypes.Add(item);
-            
+
             IsContextLoading = false;
         }
 
@@ -101,8 +101,14 @@ namespace Sensor.ViewModels
             Properties.Settings.Default.GROUP_KEY = GroupKey;
             Properties.Settings.Default.Save();
 
-
             await LoadFormSchemasAsync();
+
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.DEVICE_TYPE))
+                SelectedDeviceTypeId = Properties.Settings.Default.DEVICE_TYPE;
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.NETWORK_TYPE))
+                SelectedNetworkTypeId = Properties.Settings.Default.NETWORK_TYPE;
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.UNIT))
+                SelectedUnitId = Properties.Settings.Default.UNIT;
         }
 
         [RelayCommand(CanExecute = nameof(CanSubmit))]
@@ -122,12 +128,14 @@ namespace Sensor.ViewModels
                     OperatingSystem = Environment.OSVersion.ToString(),
                     MsOffice = SystemTelemetry.GetWindowsOfficeVersion(),
                     BiosSerial = biosSerial,
+                    Model = SystemTelemetry.GetSystemModel(),
+                    AVEDR = string.Join('/', SystemTelemetry.CheckEDRServices()),
                     SerialNumber = !string.IsNullOrEmpty(machineGuid) ? machineGuid : biosSerial,
                     Interfaces = SystemTelemetry.GetNetworkInterfaces(),
-                    EndUser = this.EndUser,
-                    Unit = this.SelectedUnitId,
-                    NetworkType = this.SelectedNetworkTypeId,
-                    DeviceType = this.SelectedDeviceTypeId
+                    EndUser = EndUser,
+                    Unit = SelectedUnitId,
+                    NetworkType = SelectedNetworkTypeId,
+                    DeviceType = SelectedDeviceTypeId
                 };
             });
 
@@ -139,6 +147,18 @@ namespace Sensor.ViewModels
             StatusText = success
                 ? "Synchronization Complete! Hardware state recorded successfully."
                 : "Transmission Error. Check logs for details.";
+
+            if (success)
+            {
+                Properties.Settings.Default.NETWORK_TYPE = SelectedNetworkTypeId;
+                Properties.Settings.Default.DEVICE_TYPE = SelectedDeviceTypeId;
+                Properties.Settings.Default.UNIT = SelectedUnitId;
+                Properties.Settings.Default.END_USER = EndUser;
+                Properties.Settings.Default.API_URL = ApiUrl;
+                Properties.Settings.Default.GROUP_KEY = GroupKey;
+
+                Properties.Settings.Default.Save();
+            }
         }
 
         private bool CanSubmit()
